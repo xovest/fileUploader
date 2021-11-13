@@ -1,11 +1,44 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useState } from 'react'
+import axios from 'axios';
 
 export const FileUpload = () => {
+  const [file, setFile] = useState('');
+  const [filename, setFilename] = useState('Upload');
+  const [uploadedFile, setUploadedFile] = useState({});
+
+  const onChange = e => {
+    setFile(e.target.files[0]);
+    setFilename(e.target.files[0].name);
+  };
+
+  const onSubmit = async e => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await axios.post('/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      const { fileName, filePath } = res.data;
+      setUploadedFile({ fileName, filePath });
+    } catch(err) {
+      if (err.response.status === 500) {
+        console.log('Problem with server');
+      } else {
+        console.log(err.response.data.msg);
+      }
+    }
+  };
+
   return (
     <Fragment>
-      <form>
+      <form onSubmit={onSubmit}>
         <div className="input-group mb-4">
-          <input type="file" className="form-control" id="inputGroupFile01" />
+          <label className="input-group-text" htmlFor="inputGroupFile02">{filename}</label>
+          <input type="file" className="form-control" id="inputGroupFile02" onChange={onChange} />
         </div>
         <input type="submit" value="Upload" className="btn btn-primary btn-block mt-4" />
       </form>

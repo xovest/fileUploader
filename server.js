@@ -22,4 +22,4 @@ app.post('/upload', (req, res) => {
   });
 });
 
-app.listen(5000, () => console.log('Server let\'s go'));
+app.listen(3000, () => console.log('Server let\'s go'));
